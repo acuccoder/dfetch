@@ -1,5 +1,5 @@
 # dfetch
-a tiny system information fetching tool written in sh
+a tiny system information fetching tool written in bash
 (i am allergic to uppercase letters in descriptions)
 
 This is heavily based on [ufetch](https://gitlab.com/jschx/ufetch), but ufetch is on GitLab, and there's no way to fork from GitLab to GitHub.
