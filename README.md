@@ -10,7 +10,7 @@ Currently only the Arch Linux logo is available. Also, package detection doesn't
 
 
 ## INSTALLING
-Just download the dfetch file from [Releases][https://github.com/acuccoder/dfetch/releases] (none currently published, just get the file from the repo) and move it to a location on your PATH. (e.g. ~/.local/bin)
+Just download the dfetch file from [Releases](https://github.com/acuccoder/dfetch/releases) (none currently published, just get the file from the repo) and move it to a location on your PATH. (e.g. ~/.local/bin)
 Run the file by typing "dfetch" into the terminal.
 
 ### DEPENDENCIES
