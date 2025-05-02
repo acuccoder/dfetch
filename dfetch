@@ -1,0 +1,110 @@
+#!/bin/sh
+#
+# dfetch - tiny system info program for arch
+# my custom ufetch fork
+
+# INSTALLING
+# Just copy this file into ~/.local/bin or anywhere on your PATH.
+# It's that easy.
+# Then type dfetch into terminal.
+# Voila.
+
+# FOR NON-ARCH DISTROS
+# Just change the logo (remember to copy the logo line-by-line to preserve everything else on the line) and the ${os} variable on line 20.
+
+
+## INFO
+
+# user is already defined
+host="$(cat /etc/hostname)"
+#os=${grep -oP '(?<=^NAME=).+' /etc/os-release | tr -d '"'} # change this manually if the output isn't your OS name, or you are on another *nix (macOS).
+os_base="$(uname -s)"
+if [ -f /etc/os-release ]; then
+  os=$(grep '^NAME=' /etc/os-release | sed -e 's/^NAME="//' -e 's/"$//')
+elif [ -f /etc/lsb-release ]; then
+  os=$(grep '^DISTRIB_DESCRIPTION=' /etc/lsb-release | sed -e 's/^DISTRIB_DESCRIPTION="//' -e 's/"$//')
+elif [[ "$os_base" == "Darwin" ]]; then
+  os="macOS $(sw_vers -productVersion)"
+elif [[ "$os_base" == "FreeBSD" ]]; then
+  os="FreeBSD $(uname -r)"
+elif [[ "$os_base" == "OpenBSD" ]]; then
+  os="OpenBSD $(uname -r)"
+elif [[ "$os_base" == "NetBSD" ]]; then
+  os="NetBSD $(uname -r)"
+else
+  os="Unknown"
+fi
+kernel="$(uname -sr)"
+uptime="$(uptime -p | sed 's/up //')"
+packages="$(pacman -Q | wc -l)"
+shell="$(basename "${SHELL}")"
+
+## UI DETECTION
+
+parse_rcs() {
+	for f in "${@}"; do
+		wm="$(tail -n 1 "${f}" 2> /dev/null | cut -d ' ' -f 2)"
+		[ -n "${wm}" ] && echo "${wm}" && return
+	done
+}
+
+rcwm="$(parse_rcs "${HOME}/.xinitrc" "${HOME}/.xsession")"
+
+ui='unknown'
+uitype='UI'
+if [ -n "${DE}" ]; then
+	ui="${DE}"
+	uitype='DE'
+elif [ -n "${WM}" ]; then
+	ui="${WM}"
+	uitype='WM'
+elif [ -n "${XDG_CURRENT_DESKTOP}" ]; then
+	ui="${XDG_CURRENT_DESKTOP}"
+	uitype='DE'
+elif [ -n "${DESKTOP_SESSION}" ]; then
+	ui="${DESKTOP_SESSION}"
+	uitype='DE'
+elif [ -n "${rcwm}" ]; then
+	ui="${rcwm}"
+	uitype='WM'
+elif [ -n "${XDG_SESSION_TYPE}" ]; then
+	ui="${XDG_SESSION_TYPE}"
+fi
+
+ui="$(basename "${ui}")"
+
+## DEFINE COLORS
+
+# probably don't change these
+if [ -x "$(command -v tput)" ]; then
+	bold="$(tput bold 2> /dev/null)"
+	black="$(tput setaf 0 2> /dev/null)"
+	red="$(tput setaf 1 2> /dev/null)"
+	green="$(tput setaf 2 2> /dev/null)"
+	yellow="$(tput setaf 3 2> /dev/null)"
+	blue="$(tput setaf 4 2> /dev/null)"
+	magenta="$(tput setaf 5 2> /dev/null)"
+	cyan="$(tput setaf 6 2> /dev/null)"
+	white="$(tput setaf 7 2> /dev/null)"
+	reset="$(tput sgr0 2> /dev/null)"
+fi
+
+# you can change these
+lc="${reset}${bold}${blue}"         # labels
+nc="${reset}${bold}${blue}"         # user and hostname
+ic="${reset}"                       # reset
+c0="${reset}${cyan}"                # first color
+
+## OUTPUT
+
+cat <<EOF
+  		  ╭────────────╮
+${c0}        /\\	  ${ic}│ ${nc}${host}${ic}     │ ${reset}
+${c0}       /  \\       ${ic}│ ${lc} USER${ic}     │ ${USER}${reset}
+${c0}      /\\   \\      ${ic}│ ${lc} OS       ${ic}│ ${os}${reset}
+${c0}     /  __  \\     ${ic}│ ${lc} KERNEL   ${ic}│ ${kernel}${reset}
+${c0}    /  (  )  \\    ${ic}│ ${lc}󰅐 UPTIME   ${ic}│ ${uptime}${reset}
+${c0}   /   |  |   \   ${ic}│ ${lc} SHELL    ${ic}│ ${shell}${reset}
+${c0}  /_-''    ''-_\  ${ic}│ ${lc}󰇄 ${uitype}       ${ic}│ ${ui}${reset}
+                  ${ic}╰────────────╯
+EOF
