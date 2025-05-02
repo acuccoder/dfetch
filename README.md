@@ -14,5 +14,5 @@ Run the file by typing "dfetch" into the terminal.
 
 ### DEPENDENCIES
 - A working *nix system
-- sh
+- bash
 - A [Nerd Font](https://www.nerdfonts.com/)
