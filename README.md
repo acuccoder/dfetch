@@ -16,3 +16,8 @@ Run the file by typing "dfetch" into the terminal.
 - A working *nix system
 - bash
 - A [Nerd Font](https://www.nerdfonts.com/)
+
+# CREDITS
+- ufetch for most of the logos (I made some myself)
+- Whoever created bash for bash
+- Ryan L McIntyre/ryanoasis for Nerd Fonts
